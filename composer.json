@@ -1,0 +1,13 @@
+{
+    "name": "divineomega/laravel-omega-search",
+    "description": "Easily add an intelligent search engine to your Laravel powered website or web application",
+    "require": {
+        "divineomega/omega-search": "^4.0",
+        "laravel/framework": ">=5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "DivineOmega\\LaravelOmegaSearch\\": "src/"
+        }
+    }
+}
