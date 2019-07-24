@@ -3,6 +3,7 @@
 namespace DivineOmega\LaravelOmegaSearch\Traits;
 
 use DivineOmega\OmegaSearch\OmegaSearch;
+use DivineOmega\OmegaSearch\SearchResults;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 trait OmegaSearchTrait
 {
     /**
-     * Perform an intelligent fuzzy search, and returns a query builder filtered
+     * Performs the search operation, and returns a query builder filtered
      * to the related records in descending order of relevance.
      *
      * @param $searchText
@@ -18,6 +19,22 @@ trait OmegaSearchTrait
      * @return Builder
      */
     public static function omegaSearch($searchText)
+    {
+        $searchResults = self::omegaSearchRaw($searchText);
+        $query = self::buildQueryBuilderFromSearchResults($searchResults);
+
+        return $query;
+    }
+
+    /**
+     * Performs the search operation, and returns the raw results from the
+     * Omega Search package, including record primary keys, relevance values,
+     * and relevance statistics (highest, lowest, and average relevance).
+     *
+     * @param $searchText
+     * @return SearchResults
+     */
+    public static function omegaSearchRaw($searchText)
     {
         /** @var Model $model */
         $model = new self();
@@ -30,17 +47,33 @@ trait OmegaSearchTrait
             ->setFieldsToSearch($model->getOmegaSearchFieldsToSearch())
             ->setConditions($model->getOmegaSearchConditions());
 
-        $results = $search->query($searchText, 100);
+        return $search->query($searchText, 100);
+    }
+
+    /**
+     * Builds and returns an Eloquent query builder object from the passed
+     * Omega Search Search Results object, filtered to the related records
+     * in descending order of relevance.
+     *
+     * @param SearchResults $searchResults
+     * @return Builder
+     */
+    private static function buildQueryBuilderFromSearchResults(SearchResults $searchResults)
+    {
+        /** @var Model $model */
+        $model = new self();
+        $keyName = $model->getKeyName();
 
         $ids = array_map(function ($result) {
             return $result->id;
-        }, $results->results);
+        }, $searchResults->results);
 
-        $products = self::query()
+        /** @var Builder $query */
+        $query = self::query()
             ->whereIn($keyName, $ids)
             ->orderByRaw(DB::raw('FIELD('.$keyName.', '.implode(',', $ids).')'));
 
-        return $products;
+        return $query;
     }
 
     /**
