@@ -44,7 +44,7 @@ trait OmegaSearchTrait
     }
 
     /**
-     * Must return an array of the model fields (attribute) to search.
+     * Must return an array of the model's fields to search.
      *
      * @return array
      */
