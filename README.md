@@ -17,7 +17,7 @@ To use Laravel Omega Search, first add the `OmegaSearchTrait`
 to the models you wish to search. You must then implement 
 the following two abstract methods.
 
-* `getOmegaSearchFieldsToSearch()` - Must return an array of the model fields (attribute) to search.    
+* `getOmegaSearchFieldsToSearch()` - Must return an array of the model's fields to search.
 * `getOmegaSearchConditions()` - Must return an associative array of the search conditions. Example: `['active' => 1, 'discontinued' => 0]`
 
 After this setup, a search can be performed by calling
