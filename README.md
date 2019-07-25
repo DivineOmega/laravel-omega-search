@@ -8,7 +8,7 @@ It can be configured to search any database table.
 You can install this package with Composer.
 
 ```
-composer require divineomega/omega-search
+composer require divineomega/laravel-omega-search
 ```
 
 ## Usage
