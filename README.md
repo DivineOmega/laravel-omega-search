@@ -1,7 +1,9 @@
 # Laravel Omega Search
 
 Omega Search allows you to easily add an intelligent search engine to your Laravel powered website or web application. 
-It can be configured to search any database table.
+It can be configured to search any of your Eloquent models.
+
+Under the hood, this uses the [Omega Search](https://github.com/DivineOmega/omega-search) package.
 
 ## Installation
 
