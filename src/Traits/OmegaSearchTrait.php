@@ -14,13 +14,14 @@ trait OmegaSearchTrait
      * Performs the search operation, and returns a query builder filtered
      * to the related records in descending order of relevance.
      *
-     * @param $searchText
+     * @param string $searchText
      *
+     * @param int $limit
      * @return Builder
      */
-    public static function omegaSearch($searchText)
+    public static function omegaSearch(string $searchText, int $limit = 100)
     {
-        $searchResults = self::omegaSearchRaw($searchText);
+        $searchResults = self::omegaSearchRaw($searchText, $limit);
         $query = self::buildQueryBuilderFromSearchResults($searchResults);
 
         return $query;
@@ -31,10 +32,11 @@ trait OmegaSearchTrait
      * Omega Search package, including record primary keys, relevance values,
      * and relevance statistics (highest, lowest, and average relevance).
      *
-     * @param $searchText
+     * @param string $searchText
+     * @param int $limit
      * @return SearchResults
      */
-    public static function omegaSearchRaw($searchText)
+    public static function omegaSearchRaw(string $searchText, int $limit = 100)
     {
         /** @var Model $model */
         $model = new self();
@@ -47,7 +49,7 @@ trait OmegaSearchTrait
             ->setFieldsToSearch($model->getOmegaSearchFieldsToSearch())
             ->setConditions($model->getOmegaSearchConditions());
 
-        return $search->query($searchText, 100);
+        return $search->query($searchText, $limit);
     }
 
     /**
