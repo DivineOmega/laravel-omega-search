@@ -71,9 +71,12 @@ trait OmegaSearchTrait
         }, $searchResults->results);
 
         /** @var Builder $query */
-        $query = self::query()
-            ->whereIn($keyName, $ids)
-            ->orderByRaw(DB::raw('FIELD('.$keyName.', '.implode(',', $ids).')'));
+        $query = self::query();
+
+        if (count($ids) > 0) {
+            $query->whereIn($keyName, $ids)
+                ->orderByRaw(DB::raw('FIELD(' . $keyName . ', ' . implode(',', $ids) . ')'));
+        }
 
         return $query;
     }
