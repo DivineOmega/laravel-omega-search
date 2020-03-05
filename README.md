@@ -33,7 +33,7 @@ paginated (`->paginate()`) as required.
 
 ## Joining Tables
 
-If you want to used joined tables to search your model simply override the `getOmegaSearchTablesToJoin` on your model and return an array of `OmegaSearchJoins`.
+If you want to search the content of related tables, you can use joins. Simply override the `getOmegaSearchTablesToJoin` on your model and return an array of `OmegaSearchJoins`.
 
 #### Defining Joins
 
