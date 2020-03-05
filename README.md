@@ -30,3 +30,71 @@ order of relevance.
 
 The related models can then be retrieved (`->get()`) or 
 paginated (`->paginate()`) as required.
+
+## Joining Tables
+
+If you want to used joined tables to search your model simply override the `getOmegaSearchTablesToJoin` on your model and return an array of `OmegaSearchJoins`.
+
+#### Defining Joins
+
+##### Join by related keys
+
+There are two ways to define joins. The first way is to call the `OmegaSearchJoin::joinTableByForeignKey` method. You have to pass the local table name and joined table name to this method.
+
+By default the key on the joined table will be the joined table name singularised with `_id` appended and the key on the local table will `id`. These can be set manually using the 3rd and 4th parameter for this method.
+
+See below for an example:
+```php
+    public function getOmegaSearchTablesToJoin()
+    {
+        return [
+            OmegaSearchJoin::joinTableByForeignKey($this->getTable(), 'divisions'),
+        ];
+    }
+```
+
+or
+
+
+```php
+    public function getOmegaSearchTablesToJoin()
+    {
+        return [
+            OmegaSearchJoin::joinTableByForeignKey($this->getTable(), 'divisions', 'id', 'division_id),
+        ];
+    }
+```
+
+You can chain joins as seen below:
+
+```php
+    public function getOmegaSearchTablesToJoin()
+    {
+        return [
+            OmegaSearchJoin::joinTableByForeignKey($this->getTable(), 'divisions'),
+            OmegaSearchJoin::joinTableByForeignKey('divisions', 'companies', 'id', 'company_id')
+        ];
+    }
+```
+
+
+
+##### Join Manually
+
+If you want to join tables that are not just linked by related keys you can manually add conditions to a join. To do this create a `new OmegaSearchJoin` and call the `addCondition` method to add your conditions. You must specify the local table name and the joined table name in the constructor. Optionally you can specify the join type, the default is `JOIN`
+
+When adding a condition the parameter on the left will automatically have the local table name prepended and the joined table name will be prepended to the right condition.
+
+See below for an example:
+
+```php
+    public function getOmegaSearchTablesToJoin()
+    {
+        $join = new OmegaSearchJoin('contacts', 'divisions', 'INNER JOIN');
+        $join->addCondition('gross_income', '>', 'annual_income');
+        
+        return [
+            $join,
+        ];
+    }
+```
