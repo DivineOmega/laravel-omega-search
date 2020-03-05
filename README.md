@@ -81,7 +81,7 @@ You can chain joins as seen below:
 
 ##### Join Manually
 
-If you want to join tables that are not just linked by related keys you can manually add conditions to a join. To do this create a `new OmegaSearchJoin` and call the `addCondition` method to add your conditions. You must specify the local table name and the joined table name in the constructor. Optionally you can specify the join type, the default is `JOIN`
+If you want to join tables that are not just linked by related keys you can manually add conditions to a join. To do this create a new `OmegaSearchJoin` object and call the `addCondition` method to add your conditions. You must specify the local table name and the joined table name in the constructor. Optionally you can specify the join type, the default is `JOIN`
 
 When adding a condition the parameter on the left will automatically have the local table name prepended and the joined table name will be prepended to the right condition.
 
