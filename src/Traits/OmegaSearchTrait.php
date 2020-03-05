@@ -2,6 +2,7 @@
 
 namespace DivineOmega\LaravelOmegaSearch\Traits;
 
+use DivineOmega\LaravelOmegaSearch\OmegaSearchJoin;
 use DivineOmega\OmegaSearch\OmegaSearch;
 use DivineOmega\OmegaSearch\SearchResults;
 use Illuminate\Database\Eloquent\Builder;
@@ -41,13 +42,32 @@ trait OmegaSearchTrait
         /** @var Model $model */
         $model = new self();
         $keyName = $model->getKeyName();
+        $tablesToJoin = $model->getOmegaSearchTablesToJoin();
+        $fieldsToSearch = $model->getOmegaSearchFieldsToSearch();
 
         $search = (new OmegaSearch())
             ->setDatabaseConnection(DB::getPdo())
             ->setTable($model->getTable())
             ->setPrimaryKey($keyName)
-            ->setFieldsToSearch($model->getOmegaSearchFieldsToSearch())
+            ->setFieldsToSearch($fieldsToSearch)
             ->setConditions($model->getOmegaSearchConditions());
+
+
+        if(!empty($tablesToJoin)) {
+            array_unshift($fieldsToSearch, $model->getTable() . '.' . $keyName);
+
+            $sqlStatement = 'SELECT ' . implode(', ', $fieldsToSearch);
+            $sqlStatement .= ' FROM ' . $model->getTable() . ' ';
+
+            $joinStatements = array_map( function(OmegaSearchJoin $join) {
+                return $join->getSqlStatement();
+            }, $tablesToJoin);
+
+            $sqlStatement .= implode(' ', $joinStatements);
+            $sqlStatement .= ' LIMIT ? , ?';
+
+            $search->setSqlOverride($sqlStatement);
+        }
 
         return $search->query($searchText, $limit);
     }
@@ -87,6 +107,15 @@ trait OmegaSearchTrait
      * @return array
      */
     abstract public function getOmegaSearchFieldsToSearch();
+
+    /**
+     * Must return an array of the model's tables to join using the OmegaSearchJoin class.
+     *
+     * @return OmegaSearchJoin[]
+     */
+    public function getOmegaSearchTablesToJoin() {
+        return [];
+    }
 
     /**
      * Must return an associative array of the search conditions.
